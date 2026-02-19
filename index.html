@@ -1,58 +1,37 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Imsakiyah By Asrodies</title>
-  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ramadhan 2026 App</title>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<div class="app">
+<div class="container">
 
-  <header>
-    <h1>🌙 Muslim App</h1>
-  </header>
+<h1>🌙 Ramadhan 2026</h1>
 
-  <!-- MENU TAB -->
-  <div class="tabs">
-    <button onclick="showTab('jadwal')" id="btnJadwal" class="active">🕌 Jadwal</button>
-    <button onclick="showTab('doa')" id="btnDoa">🤲 Doa Harian</button>
-  </div>
+<select id="provinsi">
+<option value="">Pilih Provinsi</option>
+</select>
 
-  <!-- ================= TAB JADWAL ================= -->
-  <div id="jadwalTab">
+<select id="kota">
+<option value="">Pilih Kota/Kabupaten</option>
+</select>
 
-    <select id="provinsi" onchange="loadKabKota()">
-      <option>Memuat provinsi...</option>
-    </select>
+<button onclick="loadJadwal()">Tampilkan Jadwal</button>
 
-    <select id="kabkota" onchange="loadJadwal()">
-      <option>Pilih Kabupaten/Kota</option>
-    </select>
+<div class="countdown" id="countdown"></div>
 
-    <div id="card" class="card hidden">
-      <h2 id="namaDaerah"></h2>
-      <div id="jadwalHariIni"></div>
+<div class="card" id="jadwalHariIni"></div>
+<div class="card" id="jadwalBulanan"></div>
 
-      <div id="countdown" class="countdown hidden">
-        ⏳ Menuju Maghrib
-        <div id="timer"></div>
-      </div>
-
-      <div id="jadwalBulanan"></div>
-    </div>
-
-  </div>
-
-  <!-- ================= TAB DOA ================= -->
-  <div id="doaTab" class="hidden">
-    <div id="doaList"></div>
-  </div>
+<h2>📖 Doa Harian</h2>
+<div id="doaList"></div>
 
 </div>
 
 <script src="script.js"></script>
 </body>
 </html>
-
