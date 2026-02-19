@@ -1,154 +1,173 @@
-// =======================
-// DATA PROVINSI INDONESIA
-// =======================
-
-const provinsiIndonesia = [
-"Aceh","Sumatera Utara","Sumatera Barat","Riau","Kepulauan Riau",
-"Jambi","Sumatera Selatan","Bangka Belitung","Bengkulu","Lampung",
-"DKI Jakarta","Jawa Barat","Jawa Tengah","DI Yogyakarta","Jawa Timur",
-"Banten","Bali","Nusa Tenggara Barat","Nusa Tenggara Timur",
-"Kalimantan Barat","Kalimantan Tengah","Kalimantan Selatan",
-"Kalimantan Timur","Kalimantan Utara",
-"Sulawesi Utara","Sulawesi Tengah","Sulawesi Selatan",
-"Sulawesi Tenggara","Gorontalo","Sulawesi Barat",
-"Maluku","Maluku Utara","Papua Barat","Papua"
-];
-
 const provinsiSelect = document.getElementById("provinsi");
 const kotaSelect = document.getElementById("kota");
+const countdown = document.getElementById("countdown");
 
-// =======================
-// LOAD PROVINSI
-// =======================
+// ===============================
+// LOAD DATA KOTA DARI API KEMENAG
+// ===============================
 
-provinsiIndonesia.forEach(p=>{
-  provinsiSelect.innerHTML += `<option value="${p}">${p}</option>`;
+fetch("https://api.myquran.com/v2/sholat/kota/semua")
+.then(res => res.json())
+.then(result => {
+
+    const semuaKota = result.data;
+    window.semuaKota = semuaKota;
+
+    // Ambil provinsi unik
+    let provinsiUnik = [...new Set(
+        semuaKota.map(k => k.lokasi.split(", ").pop())
+    )];
+
+    provinsiUnik.sort();
+
+    provinsiUnik.forEach(p => {
+        provinsiSelect.innerHTML += `<option value="${p}">${p}</option>`;
+    });
+
+})
+.catch(()=>{
+    alert("Gagal memuat data wilayah dari Kemenag.");
 });
 
-// =======================
-// LOAD KOTA DARI API
-// =======================
+// ===============================
+// FILTER KOTA BERDASARKAN PROVINSI
+// ===============================
 
 provinsiSelect.addEventListener("change", function(){
-  let prov = this.value;
-  kotaSelect.innerHTML = "<option>Loading...</option>";
 
-  fetch(`https://api.aladhan.com/v1/search?country=Indonesia&state=${prov}`)
-  .then(res=>res.json())
-  .then(data=>{
-      kotaSelect.innerHTML = "<option value=''>Pilih Kota/Kabupaten</option>";
-      data.data.forEach(k=>{
-          kotaSelect.innerHTML += `<option value="${k.name}">${k.name}</option>`;
-      });
-  })
-  .catch(()=>{
-      kotaSelect.innerHTML = "<option>Gagal memuat kota</option>";
-  });
+    let prov = this.value;
+    kotaSelect.innerHTML = "<option value=''>Pilih Kabupaten/Kota</option>";
+
+    let hasilFilter = window.semuaKota.filter(k =>
+        k.lokasi.includes(prov)
+    );
+
+    hasilFilter.forEach(k => {
+        kotaSelect.innerHTML += `<option value="${k.id}">${k.lokasi}</option>`;
+    });
+
 });
 
-// =======================
-// LOAD JADWAL
-// =======================
+// ===============================
+// LOAD JADWAL SHOLAT
+// ===============================
 
 function loadJadwal(){
 
-let kota = kotaSelect.value;
-if(!kota){
-    alert("Pilih kota terlebih dahulu!");
+let idKota = kotaSelect.value;
+
+if(!idKota){
+    alert("Pilih Kabupaten/Kota terlebih dahulu!");
     return;
 }
 
-let today = new Date();
-let bulan = today.getMonth()+1;
-let tahun = today.getFullYear();
+let now = new Date();
+let tahun = now.getFullYear();
+let bulan = now.getMonth() + 1;
+let tanggal = now.getDate();
 
-fetch(`https://api.aladhan.com/v1/calendarByCity?city=${kota}&country=Indonesia&method=11&month=${bulan}&year=${tahun}`)
-.then(res=>res.json())
-.then(data=>{
+fetch(`https://api.myquran.com/v2/sholat/jadwal/${idKota}/${tahun}/${bulan}`)
+.then(res => res.json())
+.then(result => {
 
-let hariIni = today.getDate()-1;
-let jadwal = data.data[hariIni].timings;
+let jadwalHari = result.data.jadwal[tanggal-1];
 
+// ===================
 // Jadwal Hari Ini
+// ===================
+
 document.getElementById("jadwalHariIni").innerHTML = `
 <h3>Jadwal Hari Ini</h3>
-Subuh : ${jadwal.Fajr}<br>
-Dzuhur : ${jadwal.Dhuhr}<br>
-Ashar : ${jadwal.Asr}<br>
-Maghrib : ${jadwal.Maghrib}<br>
-Isya : ${jadwal.Isha}
+Imsak : ${jadwalHari.imsak}<br>
+Subuh : ${jadwalHari.subuh}<br>
+Dzuhur : ${jadwalHari.dzuhur}<br>
+Ashar : ${jadwalHari.ashar}<br>
+Maghrib : ${jadwalHari.maghrib}<br>
+Isya : ${jadwalHari.isya}
 `;
 
-// Countdown
-startCountdown(jadwal.Maghrib);
+// ===================
+// Countdown Maghrib
+// ===================
 
+startCountdown(jadwalHari.maghrib);
+
+// ===================
 // Jadwal 1 Bulan
+// ===================
+
 let html = "<h3>Jadwal 1 Bulan</h3>";
-data.data.forEach(d=>{
-  html += `${d.date.gregorian.date} - Maghrib: ${d.timings.Maghrib}<br>`;
+
+result.data.jadwal.forEach(d => {
+    html += `${d.tanggal} - Maghrib: ${d.maghrib}<br>`;
 });
+
 document.getElementById("jadwalBulanan").innerHTML = html;
 
 })
 .catch(()=>{
-  alert("Gagal mengambil jadwal!");
+    alert("Gagal mengambil jadwal dari Kemenag!");
 });
 }
 
-// =======================
-// COUNTDOWN MAGHRIB
-// =======================
+// ===============================
+// COUNTDOWN MENUJU MAGHRIB
+// ===============================
+
+let interval;
 
 function startCountdown(waktuMaghrib){
 
-let countdown = document.getElementById("countdown");
+clearInterval(interval);
 
-setInterval(()=>{
+interval = setInterval(()=>{
+
 let now = new Date();
 let maghrib = new Date();
+
 let parts = waktuMaghrib.split(":");
-maghrib.setHours(parts[0],parts[1],0);
+maghrib.setHours(parts[0], parts[1], 0);
 
-let diff = maghrib - now;
+let selisih = maghrib - now;
 
-if(diff > 0){
-let jam = Math.floor(diff/1000/60/60);
-let menit = Math.floor((diff/1000/60)%60);
-let detik = Math.floor((diff/1000)%60);
+if(selisih > 0){
+
+let jam = Math.floor(selisih/1000/60/60);
+let menit = Math.floor((selisih/1000/60)%60);
+let detik = Math.floor((selisih/1000)%60);
+
 countdown.innerHTML = `⏳ Menuju Berbuka: ${jam}j ${menit}m ${detik}d`;
+
 }else{
 countdown.innerHTML = "🌙 Sudah Waktu Berbuka!";
 }
+
 },1000);
 }
 
-// =======================
+// ===============================
 // DOA HARIAN
-// =======================
+// ===============================
 
 const doaHarian = [
 {
 judul:"Niat Sahur",
 arab:"نَوَيْتُ صَوْمَ غَدٍ عَنْ أَدَاءِ فَرْضِ شَهْرِ رَمَضَانَ لِلَّهِ تَعَالَى",
 arti:"Saya niat puasa esok hari untuk menunaikan kewajiban puasa Ramadan karena Allah Ta’ala.",
-sumber:"HR Bukhari Muslim"
+sumber:"HR Bukhari & Muslim"
 },
 {
 judul:"Doa Berbuka",
 arab:"ذَهَبَ الظَّمَأُ وَابْتَلَّتِ الْعُرُوقُ وَثَبَتَ الْأَجْرُ إِنْ شَاءَ اللَّهُ",
 arti:"Telah hilang rasa haus dan urat-urat telah basah serta pahala telah tetap, insya Allah.",
 sumber:"HR Abu Dawud"
-},
-{
-judul:"Doa Sebelum Makan",
-arab:"اللَّهُمَّ بَارِكْ لَنَا فِيمَا رَزَقْتَنَا وَقِنَا عَذَابَ النَّارِ",
-arti:"Ya Allah, berkahilah rezeki yang Engkau berikan kepada kami dan lindungi kami dari siksa neraka.",
-sumber:"HR Tirmidzi"
 }
 ];
 
 function loadDoa(){
+
 let doaList = document.getElementById("doaList");
+
 doaHarian.forEach(d=>{
 doaList.innerHTML += `
 <div class="doa-card">
@@ -159,6 +178,7 @@ doaList.innerHTML += `
 </div>
 `;
 });
+
 }
 
 loadDoa();
