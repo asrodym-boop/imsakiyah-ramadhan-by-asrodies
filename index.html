@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Jadwal Imsakiyah Ramadhan 🌙</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container">
+
+    <h1>Jadwal Imsakiyah Ramadhan</h1>
+
+    <!-- Dropdown lokasi -->
+    <div class="selectors">
+        <select id="provinsi" onchange="loadKota()">
+            <option value="">Pilih Provinsi</option>
+        </select>
+
+        <select id="kota" onchange="loadJadwal()">
+            <option value="">Pilih Kota</option>
+        </select>
+    </div>
+
+    <!-- Jadwal -->
+    <div id="card" class="card hidden">
+        <h2 id="namaKota"></h2>
+        <div id="jadwalList">
+            <!-- Jadwal akan muncul di sini -->
+        </div>
+    </div>
+
+    <!-- Countdown -->
+    <div id="countdown" class="countdown hidden">
+        🎉 Buka puasa dalam: <span id="timer"></span>
+    </div>
+
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
