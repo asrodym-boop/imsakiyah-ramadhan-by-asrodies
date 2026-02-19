@@ -2,26 +2,40 @@ const provinsiSelect = document.getElementById("provinsi");
 const kotaSelect = document.getElementById("kota");
 const countdown = document.getElementById("countdown");
 
+let semuaKota = [];
+let groupedProvinsi = {};
+
 // ===============================
-// LOAD DATA KOTA DARI API KEMENAG
+// LOAD DATA KOTA (KEMENAG)
 // ===============================
 
 fetch("https://api.myquran.com/v2/sholat/kota/semua")
 .then(res => res.json())
 .then(result => {
 
-    const semuaKota = result.data;
-    window.semuaKota = semuaKota;
+    semuaKota = result.data;
 
-    // Ambil provinsi unik
-    let provinsiUnik = [...new Set(
-        semuaKota.map(k => k.lokasi.split(", ").pop())
-    )];
+    // Kelompokkan berdasarkan 2 digit awal ID (kode provinsi)
+    semuaKota.forEach(k => {
 
-    provinsiUnik.sort();
+        let kodeProv = k.id.substring(0,2);
 
-    provinsiUnik.forEach(p => {
-        provinsiSelect.innerHTML += `<option value="${p}">${p}</option>`;
+        if(!groupedProvinsi[kodeProv]){
+            groupedProvinsi[kodeProv] = {
+                nama: k.lokasi.split(", ").pop(),
+                kota:[]
+            };
+        }
+
+        groupedProvinsi[kodeProv].kota.push(k);
+    });
+
+    // Tampilkan provinsi unik
+    Object.keys(groupedProvinsi).forEach(kode => {
+        provinsiSelect.innerHTML += `
+        <option value="${kode}">
+            ${groupedProvinsi[kode].nama}
+        </option>`;
     });
 
 })
@@ -30,20 +44,21 @@ fetch("https://api.myquran.com/v2/sholat/kota/semua")
 });
 
 // ===============================
-// FILTER KOTA BERDASARKAN PROVINSI
+// LOAD KOTA BERDASARKAN PROVINSI
 // ===============================
 
 provinsiSelect.addEventListener("change", function(){
 
-    let prov = this.value;
+    let kodeProv = this.value;
     kotaSelect.innerHTML = "<option value=''>Pilih Kabupaten/Kota</option>";
 
-    let hasilFilter = window.semuaKota.filter(k =>
-        k.lokasi.includes(prov)
-    );
+    if(!kodeProv) return;
 
-    hasilFilter.forEach(k => {
-        kotaSelect.innerHTML += `<option value="${k.id}">${k.lokasi}</option>`;
+    groupedProvinsi[kodeProv].kota.forEach(k => {
+        kotaSelect.innerHTML += `
+        <option value="${k.id}">
+            ${k.lokasi}
+        </option>`;
     });
 
 });
@@ -63,7 +78,7 @@ if(!idKota){
 
 let now = new Date();
 let tahun = now.getFullYear();
-let bulan = now.getMonth() + 1;
+let bulan = now.getMonth()+1;
 let tanggal = now.getDate();
 
 fetch(`https://api.myquran.com/v2/sholat/jadwal/${idKota}/${tahun}/${bulan}`)
@@ -71,10 +86,6 @@ fetch(`https://api.myquran.com/v2/sholat/jadwal/${idKota}/${tahun}/${bulan}`)
 .then(result => {
 
 let jadwalHari = result.data.jadwal[tanggal-1];
-
-// ===================
-// Jadwal Hari Ini
-// ===================
 
 document.getElementById("jadwalHariIni").innerHTML = `
 <h3>Jadwal Hari Ini</h3>
@@ -86,22 +97,13 @@ Maghrib : ${jadwalHari.maghrib}<br>
 Isya : ${jadwalHari.isya}
 `;
 
-// ===================
-// Countdown Maghrib
-// ===================
-
 startCountdown(jadwalHari.maghrib);
 
-// ===================
-// Jadwal 1 Bulan
-// ===================
-
+// Jadwal 1 bulan
 let html = "<h3>Jadwal 1 Bulan</h3>";
-
-result.data.jadwal.forEach(d => {
+result.data.jadwal.forEach(d=>{
     html += `${d.tanggal} - Maghrib: ${d.maghrib}<br>`;
 });
-
 document.getElementById("jadwalBulanan").innerHTML = html;
 
 })
@@ -111,7 +113,7 @@ document.getElementById("jadwalBulanan").innerHTML = html;
 }
 
 // ===============================
-// COUNTDOWN MENUJU MAGHRIB
+// COUNTDOWN MAGHRIB
 // ===============================
 
 let interval;
@@ -124,8 +126,8 @@ interval = setInterval(()=>{
 
 let now = new Date();
 let maghrib = new Date();
-
 let parts = waktuMaghrib.split(":");
+
 maghrib.setHours(parts[0], parts[1], 0);
 
 let selisih = maghrib - now;
