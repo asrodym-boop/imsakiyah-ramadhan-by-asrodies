@@ -1,157 +1,79 @@
-let provinsiSelect = document.getElementById("provinsi");
-let kotaSelect = document.getElementById("kota");
-let card = document.getElementById("card");
-let jadwalList = document.getElementById("jadwalList");
-let countdownEl = document.getElementById("countdown");
-let namaKota = document.getElementById("namaKota");
+function showTab(tab) {
 
-let jadwalData = null;
-let intervalCountdown = null;
-let semuaKota = [];
+  document.getElementById("jadwalTab").classList.add("hidden");
+  document.getElementById("doaTab").classList.add("hidden");
 
-// LOAD SELURUH KOTA DARI API EQURAN
-window.onload = async () => {
+  document.getElementById("btnJadwal").classList.remove("active");
+  document.getElementById("btnDoa").classList.remove("active");
 
-    provinsiSelect.innerHTML = `<option>Memuat...</option>`;
-
-    try {
-        let res = await fetch("https://equran.id/api/v2/kota");
-        let data = await res.json();
-
-        // cek struktur
-        semuaKota = data.data ? data.data : data;
-
-        let daftarProvinsi = [...new Set(semuaKota.map(k => k.provinsi))];
-
-        provinsiSelect.innerHTML = `<option value="">Pilih Provinsi</option>`;
-
-        daftarProvinsi.sort().forEach(p => {
-            provinsiSelect.innerHTML += `<option value="${p}">${p}</option>`;
-        });
-
-    } catch (error) {
-        console.error(error);
-        provinsiSelect.innerHTML = `<option>Gagal memuat data</option>`;
-    }
-};
-// LOAD KOTA BERDASARKAN PROVINSI
-function loadKota() {
-
-    let prov = provinsiSelect.value;
-    kotaSelect.innerHTML = `<option value="">Pilih Kota</option>`;
-
-    if (!prov) return;
-
-    let kotaFilter = semuaKota.filter(k => k.provinsi === prov);
-
-    kotaFilter.forEach(k => {
-        kotaSelect.innerHTML += `<option value="${k.id}">${k.lokasi}</option>`;
-    });
+  if (tab === "jadwal") {
+    document.getElementById("jadwalTab").classList.remove("hidden");
+    document.getElementById("btnJadwal").classList.add("active");
+  } else {
+    document.getElementById("doaTab").classList.remove("hidden");
+    document.getElementById("btnDoa").classList.add("active");
+  }
 }
-
-// LOAD JADWAL IMSAKIYAH
-async function loadJadwal() {
-
-    let idKota = kotaSelect.value;
-    if (!idKota) return;
-
-    let today = new Date();
-    let bulan = today.getMonth() + 1;
-    let tahun = today.getFullYear();
-
-    namaKota.innerText = "Memuat jadwal...";
-    card.classList.remove("hidden");
-
-    try {
-        let res = await fetch(`https://equran.id/api/v2/imsakiyah/${idKota}/${tahun}/${bulan}`);
-        let data = await res.json();
-
-        let kalender = data.data;
-
-        let indexHari = today.getDate() - 1;
-        jadwalData = kalender[indexHari];
-
-        tampilkanHariIni();
-        tampilkanBulanan(kalender);
-        startCountdown();
-
-    } catch (error) {
-        namaKota.innerText = "Gagal mengambil jadwal.";
-    }
+const doaHarian = [
+    {
+judul: "Niat Sahur (Niat Puasa)",
+arab: "نَوَيْتُ صَوْمَ غَدٍ عَنْ أَدَاءِ فَرْضِ شَهْرِ رَمَضَانَ هَذِهِ السَّنَةِ لِلَّهِ تَعَالَى",
+arti: "Saya niat puasa esok hari untuk menunaikan kewajiban puasa bulan Ramadan tahun ini karena Allah Ta’ala.",
+sumber: "Lafaz fiqih; niat cukup dalam hati (HR. Bukhari & Muslim)"
+},
+{
+judul: "Doa Berbuka Puasa",
+arab: "ذَهَبَ الظَّمَأُ وَابْتَلَّتِ الْعُرُوقُ وَثَبَتَ الْأَجْرُ إِنْ شَاءَ اللَّهُ",
+arti: "Telah hilang rasa haus dan urat-urat telah basah serta pahala telah tetap, insya Allah.",
+sumber: "HR. Abu Dawud (Hasan)"
+},
+{
+judul: "Doa Sebelum Makan",
+arab: "اللَّهُمَّ بَارِكْ لَنَا فِيمَا رَزَقْتَنَا وَقِنَا عَذَابَ النَّارِ",
+arti: "Ya Allah, berkahilah rezeki yang Engkau berikan kepada kami dan lindungi kami dari siksa neraka.",
+sumber: "HR. Tirmidzi"
+},
+{
+judul: "Doa Sesudah Makan",
+arab: "الْحَمْدُ لِلَّهِ الَّذِي أَطْعَمَنَا وَسَقَانَا وَجَعَلَنَا مُسْلِمِينَ",
+arti: "Segala puji bagi Allah yang memberi kami makan dan minum serta menjadikan kami muslim.",
+sumber: "HR. Abu Dawud"
+},
+{
+judul: "Doa Masuk Rumah",
+arab: "بِسْمِ اللَّهِ وَلَجْنَا وَبِسْمِ اللَّهِ خَرَجْنَا وَعَلَى اللَّهِ رَبِّنَا تَوَكَّلْنَا",
+arti: "Dengan nama Allah kami masuk dan keluar, dan kepada Allah kami bertawakal.",
+sumber: "HR. Abu Dawud"
+},
+{
+judul: "Doa Keluar Rumah",
+arab: "بِسْمِ اللهِ تَوَكَّلْتُ عَلَى اللهِ لَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللهِ",
+arti: "Dengan nama Allah, aku bertawakal kepada Allah, tiada daya dan upaya kecuali dengan pertolongan Allah.",
+sumber: "HR. Abu Dawud"
+},
+{
+judul: "Doa Sebelum Tidur",
+arab: "بِاسْمِكَ اللَّهُمَّ أَمُوتُ وَأَحْيَا",
+arti: "Dengan nama-Mu ya Allah aku mati dan hidup.",
+sumber: "HR. Bukhari"
 }
+];
 
-function tampilkanHariIni() {
+function loadDoa() {
 
-    jadwalList.innerHTML = `
-        <h3>📅 Jadwal Hari Ini</h3>
-        <p>Imsak: ${jadwalData.imsak}</p>
-        <p>Subuh: ${jadwalData.subuh}</p>
-        <p>Dzuhur: ${jadwalData.dzuhur}</p>
-        <p>Ashar: ${jadwalData.ashar}</p>
-        <p>Maghrib: ${jadwalData.maghrib}</p>
-        <p>Isya: ${jadwalData.isya}</p>
+  let doaList = document.getElementById("doaList");
+  doaList.innerHTML = "";
+
+  doaHarian.forEach(d => {
+    doaList.innerHTML += `
+      <div class="doa-card">
+        <h3>${d.judul}</h3>
+        <div class="doa-arab">${d.arab}</div>
+        <div class="doa-arti">${d.arti}</div>
+        <small>Sumber: ${d.sumber}</small>
+      </div>
     `;
+  });
 }
 
-// TABEL 1 BULAN
-function tampilkanBulanan(kalender) {
-
-    let tabel = `
-        <h3 style="margin-top:20px;">📆 Jadwal 1 Bulan</h3>
-        <div style="overflow-x:auto;">
-        <table border="1" style="width:100%; font-size:12px;">
-        <tr>
-            <th>Tgl</th>
-            <th>Imsak</th>
-            <th>Subuh</th>
-            <th>Maghrib</th>
-        </tr>
-    `;
-
-    kalender.forEach((hari, index) => {
-        tabel += `
-            <tr>
-                <td>${index + 1}</td>
-                <td>${hari.imsak}</td>
-                <td>${hari.subuh}</td>
-                <td>${hari.maghrib}</td>
-            </tr>
-        `;
-    });
-
-    tabel += "</table></div>";
-
-    jadwalList.innerHTML += tabel;
-}
-
-// COUNTDOWN MAGHRIB
-function startCountdown() {
-
-    if (intervalCountdown) clearInterval(intervalCountdown);
-
-    countdownEl.classList.remove("hidden");
-
-    intervalCountdown = setInterval(() => {
-
-        let now = new Date();
-        let maghrib = jadwalData.maghrib.split(":");
-
-        let target = new Date();
-        target.setHours(maghrib[0], maghrib[1], 0);
-
-        let diff = target - now;
-
-        if (diff <= 0) {
-            document.getElementById("timer").innerText = "Sudah waktu berbuka!";
-            return;
-        }
-
-        let jam = Math.floor(diff / 3600000);
-        let menit = Math.floor(diff % 3600000 / 60000);
-        let detik = Math.floor(diff % 60000 / 1000);
-
-        document.getElementById("timer").innerText =
-            `${jam} jam ${menit} menit ${detik} detik`;
-
-    }, 1000);
-}
+loadDoa();
