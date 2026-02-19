@@ -1,37 +1,97 @@
 body {
-    font-family: 'Poppins', sans-serif;
-    background: linear-gradient(135deg, #4b79a1, #283e51);
-    color: #fff;
-    text-align: center;
-    padding: 20px;
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #0f2027;
+  color: white;
 }
 
-.container {
-    max-width: 480px;
-    margin: auto;
+.app {
+  max-width: 500px;
+  margin: auto;
+  padding-bottom: 50px;
+}
+
+header {
+  text-align: center;
+  padding: 15px;
+  background: #1b3c4d;
+}
+
+h1 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.tabs {
+  display: flex;
+}
+
+.tabs button {
+  flex: 1;
+  padding: 12px;
+  border: none;
+  background: #203a43;
+  color: white;
+  font-size: 14px;
+}
+
+.tabs button.active {
+  background: #2c5364;
+  font-weight: bold;
 }
 
 select {
-    padding: 10px;
-    margin: 10px;
-    border-radius: 8px;
-    border: none;
-    width: 60%;
-    font-size: 16px;
+  width: 95%;
+  margin: 10px auto;
+  display: block;
+  padding: 10px;
+  border-radius: 8px;
+  border: none;
 }
 
 .card {
-    background: rgba(255,255,255,0.15);
-    padding: 20px;
-    border-radius: 12px;
-    margin-top: 20px;
+  margin: 10px;
+  padding: 15px;
+  background: #1c3b4a;
+  border-radius: 12px;
 }
 
 .hidden {
-    display: none;
+  display: none;
 }
 
 .countdown {
-    font-size: 18px;
-    margin-top: 15px;
+  margin-top: 10px;
+  font-size: 16px;
+  text-align: center;
+}
+
+table {
+  width: 100%;
+  margin-top: 15px;
+  font-size: 11px;
+  border-collapse: collapse;
+}
+
+th, td {
+  border: 1px solid #aaa;
+  padding: 4px;
+}
+
+.doa-card {
+  margin: 10px;
+  padding: 15px;
+  background: #1c3b4a;
+  border-radius: 12px;
+}
+
+.doa-arab {
+  font-size: 18px;
+  text-align: right;
+  margin-bottom: 10px;
+}
+
+.doa-arti {
+  font-size: 13px;
+  color: #ccc;
 }
