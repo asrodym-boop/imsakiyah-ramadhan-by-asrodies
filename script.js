@@ -1,3 +1,6 @@
+// ==========================================
+// ELEMENT
+// ==========================================
 let provinsiSelect = document.getElementById("provinsi");
 let kotaSelect = document.getElementById("kabkota");
 let card = document.getElementById("card");
@@ -10,9 +13,10 @@ let timerEl = document.getElementById("timer");
 let jadwalData = [];
 let interval;
 
-// ==============================
-// DATA PROVINSI & KOTA
-// ==============================
+
+// ==========================================
+// DATA PROVINSI & KOTA (SAMPLE BESAR)
+// ==========================================
 const dataIndonesia = {
   "DKI Jakarta": ["Jakarta Pusat","Jakarta Utara","Jakarta Barat","Jakarta Selatan","Jakarta Timur"],
   "Jawa Barat": ["Bandung","Bekasi","Bogor","Depok","Cirebon","Sukabumi","Tasikmalaya"],
@@ -26,20 +30,27 @@ const dataIndonesia = {
   "Papua": ["Jayapura"]
 };
 
-// ==============================
+
+// ==========================================
 // LOAD PROVINSI
-// ==============================
+// ==========================================
 window.onload = () => {
-  provinsiSelect.innerHTML = `<option value="">Pilih Provinsi</option>`;
-  Object.keys(dataIndonesia).forEach(p => {
-    provinsiSelect.innerHTML += `<option value="${p}">${p}</option>`;
-  });
+  if (provinsiSelect) {
+    provinsiSelect.innerHTML = `<option value="">Pilih Provinsi</option>`;
+    Object.keys(dataIndonesia).forEach(p => {
+      provinsiSelect.innerHTML += `<option value="${p}">${p}</option>`;
+    });
+  }
+
+  loadDoa(); // tetap load doa
 };
 
-// ==============================
+
+// ==========================================
 // LOAD KOTA
-// ==============================
+// ==========================================
 function loadKabKota() {
+
   let prov = provinsiSelect.value;
   kotaSelect.innerHTML = `<option value="">Pilih Kota/Kabupaten</option>`;
 
@@ -50,9 +61,10 @@ function loadKabKota() {
   });
 }
 
-// ==============================
-// LOAD JADWAL (AUTO 2026 / TAHUN SEKARANG)
-// ==============================
+
+// ==========================================
+// LOAD JADWAL (AUTO TAHUN SEKARANG)
+// ==========================================
 async function loadJadwal() {
 
   let kota = kotaSelect.value;
@@ -60,7 +72,7 @@ async function loadJadwal() {
 
   let today = new Date();
   let bulan = today.getMonth() + 1;
-  let tahun = today.getFullYear(); // otomatis 2026 jika tahun sudah 2026
+  let tahun = today.getFullYear(); // otomatis 2026 jika sudah 2026
 
   namaDaerah.innerText = `${kota}, Indonesia`;
   card.classList.remove("hidden");
@@ -83,9 +95,10 @@ async function loadJadwal() {
   }
 }
 
-// ==============================
+
+// ==========================================
 // TAMPILKAN HARI INI
-// ==============================
+// ==========================================
 function tampilkanHariIni() {
 
   let today = new Date().getDate();
@@ -102,9 +115,10 @@ function tampilkanHariIni() {
   `;
 }
 
-// ==============================
+
+// ==========================================
 // TABEL BULANAN
-// ==============================
+// ==========================================
 function tampilkanBulanan() {
 
   let tabel = `
@@ -133,9 +147,10 @@ function tampilkanBulanan() {
   jadwalBulananDiv.innerHTML = tabel;
 }
 
-// ==============================
+
+// ==========================================
 // COUNTDOWN MAGHRIB
-// ==============================
+// ==========================================
 function startCountdown() {
 
   if (interval) clearInterval(interval);
@@ -166,13 +181,16 @@ function startCountdown() {
   }, 1000);
 }
 
-}
+
+// ==========================================
+// DOA HARIAN (LENGKAP)
+// ==========================================
 const doaHarian = [
-    {
+{
 judul: "Niat Sahur (Niat Puasa)",
-arab: "نَوَيْتُ صَوْمَ غَدٍ عَنْ أَدَاءِ فَرْضِ شَهْرِ رَمَضَانَ هَذِهِ السَّنَةِ لِلَّهِ تَعَالَى",
-arti: "Saya niat puasa esok hari untuk menunaikan kewajiban puasa bulan Ramadan tahun ini karena Allah Ta’ala.",
-sumber: "Lafaz fiqih; niat cukup dalam hati (HR. Bukhari & Muslim)"
+arab: "نَوَيْتُ صَوْمَ غَدٍ عَنْ أَدَاءِ فَرْضِ شَهْرِ رَمَضَانَ لِلَّهِ تَعَالَى",
+arti: "Saya niat puasa esok hari untuk menunaikan kewajiban puasa Ramadan karena Allah Ta’ala.",
+sumber: "Niat cukup dalam hati (HR. Bukhari & Muslim)"
 },
 {
 judul: "Doa Berbuka Puasa",
@@ -193,18 +211,6 @@ arti: "Segala puji bagi Allah yang memberi kami makan dan minum serta menjadikan
 sumber: "HR. Abu Dawud"
 },
 {
-judul: "Doa Masuk Rumah",
-arab: "بِسْمِ اللَّهِ وَلَجْنَا وَبِسْمِ اللَّهِ خَرَجْنَا وَعَلَى اللَّهِ رَبِّنَا تَوَكَّلْنَا",
-arti: "Dengan nama Allah kami masuk dan keluar, dan kepada Allah kami bertawakal.",
-sumber: "HR. Abu Dawud"
-},
-{
-judul: "Doa Keluar Rumah",
-arab: "بِسْمِ اللهِ تَوَكَّلْتُ عَلَى اللهِ لَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللهِ",
-arti: "Dengan nama Allah, aku bertawakal kepada Allah, tiada daya dan upaya kecuali dengan pertolongan Allah.",
-sumber: "HR. Abu Dawud"
-},
-{
 judul: "Doa Sebelum Tidur",
 arab: "بِاسْمِكَ اللَّهُمَّ أَمُوتُ وَأَحْيَا",
 arti: "Dengan nama-Mu ya Allah aku mati dan hidup.",
@@ -212,9 +218,12 @@ sumber: "HR. Bukhari"
 }
 ];
 
+
 function loadDoa() {
 
   let doaList = document.getElementById("doaList");
+  if (!doaList) return;
+
   doaList.innerHTML = "";
 
   doaHarian.forEach(d => {
@@ -228,6 +237,3 @@ function loadDoa() {
     `;
   });
 }
-
-loadDoa();
-
