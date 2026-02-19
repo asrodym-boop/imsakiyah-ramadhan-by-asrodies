@@ -12,15 +12,15 @@ let semuaKota = [];
 // LOAD SELURUH KOTA DARI API EQURAN
 window.onload = async () => {
 
-    provinsiSelect.innerHTML = `<option value="">Memuat provinsi...</option>`;
+    provinsiSelect.innerHTML = `<option>Memuat...</option>`;
 
     try {
         let res = await fetch("https://equran.id/api/v2/kota");
         let data = await res.json();
 
-        semuaKota = data.data;
+        // cek struktur
+        semuaKota = data.data ? data.data : data;
 
-        // ambil daftar provinsi unik
         let daftarProvinsi = [...new Set(semuaKota.map(k => k.provinsi))];
 
         provinsiSelect.innerHTML = `<option value="">Pilih Provinsi</option>`;
@@ -30,10 +30,10 @@ window.onload = async () => {
         });
 
     } catch (error) {
-        provinsiSelect.innerHTML = `<option>Gagal memuat</option>`;
+        console.error(error);
+        provinsiSelect.innerHTML = `<option>Gagal memuat data</option>`;
     }
 };
-
 // LOAD KOTA BERDASARKAN PROVINSI
 function loadKota() {
 
