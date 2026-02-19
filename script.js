@@ -78,7 +78,7 @@ async function loadJadwal() {
     let year = today.getFullYear();
 
     // ambil jadwal 1 bulan
-    let res = await fetch(`https://api.aladhan.com/v1/calendarByCity?city=${kota}&country=Indonesia&method=2&month=${month}&year=${year}`);
+    let res = await fetch(`https://equran.id/api/v2/imsakiyah&city=${kota}&country=Indonesia&method=2&month=${month}&year=${year}`);
     let data = await res.json();
 
     let kalender = data.data;
@@ -156,3 +156,4 @@ function tampilkanJadwalBulanan(kalender) {
 
     jadwalList.innerHTML += tabel;
 }
+
