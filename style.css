@@ -1,97 +1,71 @@
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: #0f2027;
-  color: white;
+body{
+    margin:0;
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+    color:white;
 }
 
-.app {
-  max-width: 500px;
-  margin: auto;
-  padding-bottom: 50px;
+.container{
+    max-width:480px;
+    margin:auto;
+    padding:15px;
 }
 
-header {
-  text-align: center;
-  padding: 15px;
-  background: #1b3c4d;
+h1{
+    text-align:center;
+    margin-bottom:20px;
 }
 
-h1 {
-  margin: 0;
-  font-size: 20px;
+select, button{
+    width:100%;
+    padding:12px;
+    margin-top:10px;
+    border:none;
+    border-radius:8px;
+    font-size:16px;
 }
 
-.tabs {
-  display: flex;
+button{
+    background:#00c853;
+    color:white;
+    font-weight:bold;
 }
 
-.tabs button {
-  flex: 1;
-  padding: 12px;
-  border: none;
-  background: #203a43;
-  color: white;
-  font-size: 14px;
+button:hover{
+    background:#00a844;
 }
 
-.tabs button.active {
-  background: #2c5364;
-  font-weight: bold;
+.card{
+    background:white;
+    color:black;
+    padding:15px;
+    margin-top:15px;
+    border-radius:10px;
+    font-size:14px;
 }
 
-select {
-  width: 95%;
-  margin: 10px auto;
-  display: block;
-  padding: 10px;
-  border-radius: 8px;
-  border: none;
+.countdown{
+    text-align:center;
+    font-size:20px;
+    margin-top:15px;
+    font-weight:bold;
+    color:#00ffcc;
 }
 
-.card {
-  margin: 10px;
-  padding: 15px;
-  background: #1c3b4a;
-  border-radius: 12px;
+h2{
+    margin-top:30px;
 }
 
-.hidden {
-  display: none;
+.doa-card{
+    background:white;
+    color:black;
+    padding:15px;
+    margin-top:15px;
+    border-radius:10px;
 }
 
-.countdown {
-  margin-top: 10px;
-  font-size: 16px;
-  text-align: center;
-}
-
-table {
-  width: 100%;
-  margin-top: 15px;
-  font-size: 11px;
-  border-collapse: collapse;
-}
-
-th, td {
-  border: 1px solid #aaa;
-  padding: 4px;
-}
-
-.doa-card {
-  margin: 10px;
-  padding: 15px;
-  background: #1c3b4a;
-  border-radius: 12px;
-}
-
-.doa-arab {
-  font-size: 18px;
-  text-align: right;
-  margin-bottom: 10px;
-}
-
-.doa-arti {
-  font-size: 13px;
-  color: #ccc;
+.doa-arab{
+    font-size:20px;
+    text-align:right;
+    margin-bottom:10px;
 }
